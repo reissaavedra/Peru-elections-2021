@@ -42,12 +42,12 @@ def extractTweets():
     #
     # outTweets = [[tweet.id_str, tweet.created_at, tweet.text.encode("utf-8")] for tweet in allTweets]
     # return outTweets
-    new_search = ["keiko"]
-    date_since = "2021-04-15"
+    new_search = ["Pedro Castillo", 'pedro castillo', 'Peru Libre']
+    date_since = "2021-04-11"
     api = configTweepy()
     if api:
         tweets = api.search(q=new_search,
-                            lang='es',
+                            lang='en',
                             since=date_since)
         # return [[
         #     # tweet.author,
@@ -87,7 +87,9 @@ def extractTweets():
 def uploadTweets2Csv(tweets):
     path = './dataCsv'
     os.makedirs(path, exist_ok=True)
-    print(tweets)
+    print(f"Tweets extraidos : {len(tweets['statuses'])} \n")
+    for t in tweets['statuses']:
+        print(f"{t['text']} \n")
 
 if __name__ == '__main__':
     # print(len(extractTweets()['statuses']))
