@@ -1,16 +1,15 @@
 from yaml import load, FullLoader
-import tweepy
+from tweepy import OAuthHandler, API, Cursor,StreamListener,Stream
 import os
 
-PATH_YAML_CONFIG = r'./config/config.yml'
+PATH_YAML_CONFIG = r'config/credentialsTwitterConf.yml'
 consumerKey = 'CONSUMER_KEY'
 consumerSecretKey = 'CONSUMER_SECRET_KEY'
 accessTokenKey = 'ACCESS_TOKEN_KEY'
 accessTokenSecretKey = 'ACCESS_TOKEN_SECRET_KEY'
 
-#Parametros de ejecucion
+# Parametros de ejecucion
 retryDelay = 180
-
 
 
 def loadParametersYml():
@@ -21,9 +20,9 @@ def loadParametersYml():
 
 def configTweepy():
     paramYml = loadParametersYml()
-    auth = tweepy.OAuthHandler(paramYml[consumerKey], paramYml[consumerSecretKey])
+    auth = OAuthHandler(paramYml[consumerKey], paramYml[consumerSecretKey])
     auth.set_access_token(paramYml[accessTokenKey], paramYml[accessTokenSecretKey])
-    api = tweepy.API(auth,
+    api = API(auth,
                      # parser=tweepy.parsers.JSONParser(),
                      wait_on_rate_limit=True,
                      retry_delay=retryDelay,
@@ -35,9 +34,9 @@ def configTweepy():
 
 def extractTweets():
     if configTweepy():
-        cursorTweepy = tweepy.Cursor(configTweepy().search,
+        cursorTweepy = Cursor(configTweepy().search,
                                      q=["Pedro Castillo", 'pedro castillo', 'Peru Libre'],
-                                     lang=['en','es'],
+                                     lang='es',
                                      since="2021-04-11").items(100000000)
         # return
         uploadTweets2Csv(cursorTweepy)
@@ -83,6 +82,24 @@ def uploadTweets2Csv(tweets):
     return tweetsPedro
 
 
+class StreamListenerTweets(StreamListener):
+    def on_status(self, status):
+        print(status.text)
+
+    def on_error(self, status_code):
+        if status_code == 420:
+            return False
+
+def streamTweets():
+    api = configTweepy()
+    stream_listener = StreamListenerTweets()
+    stream = Stream(auth=api.auth, listener=stream_listener)
+    stream.filter(track=["fujimori","keiko"])
+
 if __name__ == '__main__':
-    # print(len(extractTweets()['statuses']))
-    extractTweets()
+    streamTweets()
+    # extractTweets()
+
+
+
+
