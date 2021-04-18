@@ -1,8 +1,8 @@
 from yaml import load, FullLoader
-path_yaml_config = r'./config/config.yml'
+PATH_YAML_CONFIG = r'./config/config.yml'
 
 def loadParametersYml():
-    with open(path_yaml_config) as file:
+    with open(PATH_YAML_CONFIG) as file:
         parameters = load(file, Loader=FullLoader)
         return parameters
 
