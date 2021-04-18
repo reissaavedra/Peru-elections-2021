@@ -1,7 +1,8 @@
 import json
 import csv
 import pprint
-from tweepy import StreamListener
+from tweepy import StreamListener, Stream
+from utils.utils import configTweepy
 
 class StreamListener(StreamListener):
     def on_status(self, status):
@@ -27,6 +28,7 @@ class StreamListener(StreamListener):
 #
 #                 pprint.pprint(item)
 
+api = configTweepy()
 stream_listener = StreamListener()
-stream = tweepy.Stream(auth=api.auth, listener=stream_listener)
+stream = Stream(auth=api.auth, listener=stream_listener)
 stream.filter(track=["trump", "clinton", "hillary clinton", "donald trump"])
