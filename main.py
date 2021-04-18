@@ -97,8 +97,8 @@ def streamTweets():
     stream.filter(track=["fujimori","keiko"])
 
 if __name__ == '__main__':
-    streamTweets()
-    # extractTweets()
+    # streamTweets()
+    extractTweets()
 
 
 
