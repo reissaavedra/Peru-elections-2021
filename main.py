@@ -1,3 +1,5 @@
+import random
+
 from tweepy import Cursor, StreamListener, Stream
 from utils.utils import configTweepy, getDatesExtractData, getItemsCount, getKeywords, getLanguages
 from batch import TweetBatch
@@ -31,17 +33,25 @@ def extractTweets():
 
 def uploadTweets2Csv(tweets, candidate, lang):
     fileName = os.path.join(PATH_DATA_CSV, f'{candidate}_{lang}.csv')
-
+    import time
     with open(fileName, 'a') as file:
         try:
             writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             writer.writerow(TweetBatch.TweetBatch.columns)
+            i = 0
             for tweet in tweets:
                 tweetBatch = TweetBatch.TweetBatch(tweet._json)
                 writer.writerow(tweetBatch.__dict__.values())
-            print(f"Candidate: {candidate}, Language: {lang}, Tweets extraidos : {len(tweets)}  \n")
+                if(i != 50):
+                    i+= 1
+                else:
+                    time.sleep(60 * random.randint(2,5))
+                    i = 0
         except Exception as e:
             print(e)
+        finally:
+            print(f"Candidate: {candidate}, Language: {lang}, Tweets extraidos : {len(tweets)}  \n")
+
 
 
 if __name__ == '__main__':
