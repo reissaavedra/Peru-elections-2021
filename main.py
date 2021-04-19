@@ -42,16 +42,13 @@ def uploadTweets2Csv(tweets, candidate, lang):
             for tweet in tweets:
                 tweetBatch = TweetBatch.TweetBatch(tweet._json)
                 writer.writerow(tweetBatch.__dict__.values())
-                if(i != 100):
-                    i+= 1
-                else:
-                    time.sleep(60 * random.randint(2,5))
-                    i = 0
+                i += 1
+                if i % 100 == 0:
+                    time.sleep(60 * random.randint(4, 10))
         except Exception as e:
             print(e)
         finally:
-            print(f"Candidate: {candidate}, Language: {lang}, Tweets extraidos : {len(tweets)}  \n")
-
+            print(f"Candidate: {candidate}, Language: {lang}, Tweets extraidos : {i}  \n")
 
 
 if __name__ == '__main__':
