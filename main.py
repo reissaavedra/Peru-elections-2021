@@ -31,18 +31,23 @@ def extractTweets():
 
 def uploadTweets2Csv(tweets, candidate, lang):
     fileName = os.path.join(PATH_DATA_CSV, f'{candidate}_{lang}.csv')
-    tweetsExtracted = [[
-        TweetBatch.TweetBatch(tweet._json)
-    ] for tweet in tweets]
+    # tweetsExtracted = [[
+    #     try:
+    #         TweetBatch.TweetBatch(tweet._json)
+    #     except Exception as e:
+    #         print(e)
+    #
+    # ] for tweet in tweets]
 
-    print(f"Candidate: {candidate}, Language: {lang}, Tweets extraidos : {len(tweetsExtracted)}  \n")
+    # print(f"Candidate: {candidate}, Language: {lang}, Tweets extraidos : {len(tweetsExtracted)}  \n")
 
     with open(fileName, 'a') as file:
         try:
             writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             writer.writerow(TweetBatch.TweetBatch.columns)
-            for t in tweetsExtracted:
-                writer.writerow(t[0].__dict__.values())
+            for tweet in tweets:
+                tweetBatch = TweetBatch.TweetBatch(tweet._json)
+                writer.writerow(tweetBatch.__dict__.values())
         except Exception as e:
             print(e)
 
