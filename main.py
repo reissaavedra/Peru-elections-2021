@@ -42,7 +42,7 @@ def uploadTweets2Csv(tweets, candidate, lang):
             for tweet in tweets:
                 tweetBatch = TweetBatch.TweetBatch(tweet._json)
                 writer.writerow(tweetBatch.__dict__.values())
-                if(i != 50):
+                if(i != 100):
                     i+= 1
                 else:
                     time.sleep(60 * random.randint(2,5))
