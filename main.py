@@ -36,11 +36,12 @@ def extractTweets():
                                       lang=lang,
                                       since=f'{dateToSearch} 00:00:00',
                                       until=f'{dateToSearch} 23:59:59',).items(itemsCount)
-                uploadTweets2Csv(cursorTweepy, candidates[key], lang)
+                print(f'Staring download tweets Candidate: {candidates[key]}, dateToSearch: {dateToSearch}, lang: {lang}')
+                uploadTweets2Csv(cursorTweepy, candidates[key], lang, dateToSearch)
 
 
-def uploadTweets2Csv(tweets, candidate, lang):
-    fileName = os.path.join(PATH_DATA_CSV, f'{candidate}_{lang}.csv')
+def uploadTweets2Csv(tweets, candidate, lang, dateToSearch):
+    fileName = os.path.join(PATH_DATA_CSV, f'{candidate}_{lang}_{dateToSearch}.csv')
     print(f"Candidate: {candidate}, Language: {lang} \n")
     import time
     with open(fileName, 'a', encoding="utf-8") as file:
@@ -52,11 +53,9 @@ def uploadTweets2Csv(tweets, candidate, lang):
                 tweetBatch = TweetBatch.TweetBatch(tweet._json)
                 writer.writerow(tweetBatch.__dict__.values())
                 i += 1
-                if i % 100 == 0:
-                    sleepTime = random.randint(2,5)
-                    print(f'Stoping {sleepTime} seconds....')
+                if i % 1000 == 0:
+                    sleepTime = random.randint(1, 3)
                     time.sleep(60 * sleepTime)
-                    print('Reanunding....')
             except Exception as e:
                 print(e)
                 continue
