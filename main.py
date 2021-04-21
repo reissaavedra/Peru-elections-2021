@@ -13,22 +13,30 @@ candidates = {
 }
 
 PATH_DATA_CSV = './dataCsv'
+FORMAT_DATE = '%Y-%m-%d'
 
+def generateDates():
+    import datetime
+    today = datetime.date.today()
+    sinceDate = datetime.datetime.strptime(getDatesExtractData(), FORMAT_DATE).date()
+    differenceBetweenDates = abs((today - sinceDate).days) + 1
+    return [(sinceDate + datetime.timedelta(days=i)).strftime(FORMAT_DATE) for i in range(differenceBetweenDates)]
 
 def extractTweets():
     api = configTweepy()
     if api:
         languages = getLanguages()
         itemsCount = getItemsCount()
-        sinceDate = getDatesExtractData()
+        rangeDates = generateDates()
         os.makedirs(PATH_DATA_CSV, exist_ok=True)
-
-        for key, lang in product(candidates.keys(), languages):
-            cursorTweepy = Cursor(configTweepy().search,
-                                  q=getKeywords(candidates[key]),
-                                  lang=lang,
-                                  since=sinceDate).items(itemsCount)
-            uploadTweets2Csv(cursorTweepy, candidates[key], lang)
+        for dateToSearch in rangeDates:
+            for key, lang in product(candidates.keys(), languages):
+                cursorTweepy = Cursor(configTweepy().search,
+                                      q=getKeywords(candidates[key]),
+                                      lang=lang,
+                                      since=f'{dateToSearch} 00:00:00',
+                                      until=f'{dateToSearch} 23:59:59',).items(itemsCount)
+                uploadTweets2Csv(cursorTweepy, candidates[key], lang)
 
 
 def uploadTweets2Csv(tweets, candidate, lang):
@@ -54,4 +62,5 @@ def uploadTweets2Csv(tweets, candidate, lang):
                 continue
 
 if __name__ == '__main__':
-    extractTweets()
+    # extractTweets()
+    print(generateDates())
