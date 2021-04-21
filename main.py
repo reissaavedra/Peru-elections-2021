@@ -29,15 +29,18 @@ def extractTweets():
         itemsCount = getItemsCount()
         rangeDates = generateDates()
         os.makedirs(PATH_DATA_CSV, exist_ok=True)
+        v = 0
         for dateToSearch in rangeDates:
             for key, lang in product(candidates.keys(), languages):
                 cursorTweepy = Cursor(configTweepy().search,
                                       q=getKeywords(candidates[key]),
                                       lang=lang,
-                                      since=f'{dateToSearch} 00:00:00',
-                                      until=f'{dateToSearch} 23:59:59',).items(itemsCount)
+                                      since=f'{dateToSearch}',
+                                      until=f'{rangeDates[v+1]}',
+                                      show_user= True).items(itemsCount)
                 print(f'Staring download tweets Candidate: {candidates[key]}, dateToSearch: {dateToSearch}, lang: {lang}')
                 uploadTweets2Csv(cursorTweepy, candidates[key], lang, dateToSearch)
+            v+=1
 
 
 def uploadTweets2Csv(tweets, candidate, lang, dateToSearch):
@@ -53,8 +56,9 @@ def uploadTweets2Csv(tweets, candidate, lang, dateToSearch):
                 tweetBatch = TweetBatch.TweetBatch(tweet._json)
                 writer.writerow(tweetBatch.__dict__.values())
                 i += 1
-                if i % 1000 == 0:
-                    sleepTime = random.randint(1, 3)
+                if i % 500 == 0:
+                    print(f'{i} tweets donwloaded')
+                    sleepTime = random.randint(2, 4)
                     time.sleep(60 * sleepTime)
             except Exception as e:
                 print(e)
