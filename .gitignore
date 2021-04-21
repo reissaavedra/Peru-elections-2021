@@ -1,2 +1,3 @@
 # ignore doc/notes.txt, but not doc/server/arch.txt
 config/credentialsTwitterConf.yml
+dataCsv/*.*
