@@ -61,5 +61,4 @@ def uploadTweets2Csv(tweets, candidate, lang, dateToSearch):
                 continue
 
 if __name__ == '__main__':
-    # extractTweets()
-    print(generateDates())
+    extractTweets()
