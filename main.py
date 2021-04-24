@@ -1,5 +1,4 @@
 import random
-
 from tweepy import Cursor, StreamListener, Stream
 from utils.utils import configTweepy, getDatesExtractData, getItemsCount, getKeywords, getLanguages
 from batch import TweetBatch
@@ -63,6 +62,28 @@ def uploadTweets2Csv(tweets, candidate, lang, dateToSearch):
             except Exception as e:
                 print(e)
                 continue
+        
+import argparse as argp
+import time
 
 if __name__ == '__main__':
-    extractTweets()
+    #parse command line options
+    date = time.time().today().strftime
+    cand = ''
+    
+    parser = argp.ArgumentParser()
+    parser.add_argument('-d', '--date',
+                        help='date for extraction', type=str)
+    parser.add_argument('-c', '--cand',
+                        help='candidate for extraction', type=str)
+    options = parser.parse_args()
+
+    if options.date is not None:
+        date = options.date
+
+    if options.candidate is None:
+        raise SystemExit('Error, por favor indique el candidato a extraer')
+    else:
+        cand = options.cand    
+
+    # extractTweets()

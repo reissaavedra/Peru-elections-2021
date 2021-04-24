@@ -29,7 +29,6 @@ def configTweepy():
     auth = OAuthHandler(paramCredentials[consumerKey], paramCredentials[consumerSecretKey])
     auth.set_access_token(paramCredentials[accessTokenKey], paramCredentials[accessTokenSecretKey])
     api = API(auth,
-              # proxy="http://127.0.0.1:1080",
               wait_on_rate_limit=True,
               retry_delay=paramExtractData[retryDelay],
               retry_count=paramExtractData[retryCount],
