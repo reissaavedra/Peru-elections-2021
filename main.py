@@ -1,3 +1,5 @@
+import argparse as argp
+import datetime
 import random
 from tweepy import Cursor, StreamListener, Stream
 from utils.utils import configTweepy, getDatesExtractData, getItemsCount, getKeywords, getLanguages
@@ -14,12 +16,14 @@ candidates = {
 PATH_DATA_CSV = './dataCsv'
 FORMAT_DATE = '%Y-%m-%d'
 
+
 def generateDates():
     import datetime
     today = datetime.date.today()
     sinceDate = datetime.datetime.strptime(getDatesExtractData(), FORMAT_DATE).date()
     differenceBetweenDates = abs((today - sinceDate).days) + 1
     return [(sinceDate + datetime.timedelta(days=i)).strftime(FORMAT_DATE) for i in range(differenceBetweenDates)]
+
 
 def extractTweets():
     api = configTweepy()
@@ -35,11 +39,12 @@ def extractTweets():
                                       q=getKeywords(candidates[key]),
                                       lang=lang,
                                       since=f'{dateToSearch}',
-                                      until=f'{rangeDates[v+1]}',
-                                      show_user= True).items(itemsCount)
-                print(f'Staring download tweets Candidate: {candidates[key]}, dateToSearch: {dateToSearch}, lang: {lang}')
+                                      until=f'{rangeDates[v + 1]}',
+                                      show_user=True).items(itemsCount)
+                print(
+                    f'Staring download tweets Candidate: {candidates[key]}, dateToSearch: {dateToSearch}, lang: {lang}')
                 uploadTweets2Csv(cursorTweepy, candidates[key], lang, dateToSearch)
-            v+=1
+            v += 1
 
 
 def uploadTweets2Csv(tweets, candidate, lang, dateToSearch):
@@ -62,28 +67,42 @@ def uploadTweets2Csv(tweets, candidate, lang, dateToSearch):
             except Exception as e:
                 print(e)
                 continue
-        
-import argparse as argp
-import time
+
 
 if __name__ == '__main__':
-    #parse command line options
-    date = time.time().today().strftime
-    cand = ''
-    
+    # parse command line options
+    params = {
+        'date': datetime.date.today().strftime('%Y-%m-%d'),
+        'cand': '',
+        'format': 'csv',
+        'outFile': ''
+    }
+
     parser = argp.ArgumentParser()
     parser.add_argument('-d', '--date',
                         help='date for extraction', type=str)
     parser.add_argument('-c', '--cand',
                         help='candidate for extraction', type=str)
+    parser.add_argument('-f', '--format',
+                        help='format output-file', type=str)
+    parser.add_argument('-of', '--outfile',
+                        help='output-file', type=str)
     options = parser.parse_args()
 
     if options.date is not None:
-        date = options.date
+        params['date'] = options.date
 
-    if options.candidate is None:
-        raise SystemExit('Error, por favor indique el candidato a extraer')
+    if options.format is not None:
+        params['format'] = options.format
+
+    if options.cand is not None:
+        params['cand'] = options.cand
     else:
-        cand = options.cand    
+        raise SystemExit('Debe ingresar el nombre del candidato')
+
+    if options.format is not None:
+        params['outFile'] = options.outfile
+    else:
+        params['outFile'] = os.path.join(params['date'], f"{params['cand']}.{params['format']}")
 
     # extractTweets()
