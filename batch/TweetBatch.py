@@ -25,7 +25,7 @@ class TweetBatch:
     ]
 
     def __init__(self, tweet):
-        self.created_at = tweet[self.columns[0]]
+        self.created_at = tweet['created_at']
         self.contributors = tweet['contributors']
         self.coordinates = tweet['coordinates']
         self.favorited = tweet['favorited']

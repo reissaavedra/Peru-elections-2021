@@ -49,7 +49,7 @@ def uploadTweets2Csv(tweets, candidate, lang):
             print(e)
         finally:
             print(f"Candidate: {candidate}, Language: {lang}, Tweets extraidos : {i}  \n")
-
+    
 
 if __name__ == '__main__':
     extractTweets()
