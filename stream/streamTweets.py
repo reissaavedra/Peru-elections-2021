@@ -1,13 +1,10 @@
-
 import json
 import csv
-import pprint
 from tweepy import StreamListener, Stream
-import pprint
-from utils import configTweepy
+from utils import configTweepy, getDatesExtractData, getItemsCount, getKeywords, getLanguages
 import os
-
-# print(__package__)
+import threading
+from itertools import product
 
 if __package__ is None:
     import sys
@@ -22,22 +19,32 @@ else:
 
 path_data_stream = './dataStream'
 os.makedirs(path_data_stream, exist_ok=True)
+fileName = ''
 fileName = os.path.join(path_data_stream, 'stream.csv')
 
+languages = getLanguages()
+itemsCount = getItemsCount()
+sinceDate = getDatesExtractData()
+candidates = {
+    'castilloValue': 'Castillo',
+    'keikoValue': 'Keiko'
+}
+
 class StreamListener(StreamListener):
-    def on_status(self, status):
-        # print(status)
-        # print(status.__dict__.values())
-        # tweetBatch = TweetBatch.TweetBatch(status._json)
-        # print(tweetBatch.__dict__.values())
-        with open(fileName, 'w') as file:
+
+    def on_status(self,status):
+        tweetBatch = TweetBatch.TweetBatch(status._json)
+        with open(fileName, 'a', encoding="utf-8") as file:
             try:
                 writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-                # writer.writerow(TweetBatch.TweetBatch.columns)
+                if os.stat(fileName).st_size == 0:
+                    writer.writerow(TweetBatch.TweetBatch.columns)
                 tweetBatchStream = TweetBatch.TweetBatch(status._json)
                 writer.writerow(tweetBatchStream.__dict__.values())
             except Exception as e:
-                print('error')
+                print(e)
+            finally:
+                print(tweetBatchStream.text)
     
                 
     def on_error(self, status_code):
@@ -60,7 +67,11 @@ class StreamListener(StreamListener):
 api = configTweepy()
 stream_listener = StreamListener()
 stream = Stream(auth=api.auth, listener=stream_listener)
-stream.filter(track=["trump", "clinton", "hillary clinton", "donald trump"])
 
 
+# for key, lang in product(candidates.keys(), languages):
+#     print(f"Candidate: {key}, Language: {lang},\n")
+#     stream.filter(track = getKeywords(candidates[key]), languages = lang, is_async=True)
 
+search = getKeywords('Castillo')
+stream.filter(track = search, languages = 'es')

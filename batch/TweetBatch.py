@@ -1,54 +1,52 @@
+import time
+
 class TweetBatch:
     columns = [
         'created_at',
-        'contributors',
-        'coordinates',
-        'favorited',
-        'favorite_count',
-        'geo',
         'id_str',
-        'in_reply_to_screen_name',
-        'in_reply_to_user_id',
-        'in_reply_to_status_id',
-        'is_quote_status',
-        'lang',
+        'text',
+        'source',
+        'user_id_str',
+        'user_name',
+        'user_location',
+        'user_url',
+        'user_protected',
+        'user_followers_count',
+        'user_friends_count',
+        'user_favourites_count',
+        'user_lang',
+        'geo',
+        'coordinates',
+        'favorite_count',
         'place',
-        'retweet_count',
+        'favorited',
         'retweet_count',
         'retweeted',
-        'source',
-        'text',
-        'truncated',
-        'user',
-        'entities',
-        'metadata',
+        'lang',
     ]
 
-    def __init__(self, tweet):
-        self.created_at = tweet['created_at']
-        self.contributors = tweet['contributors']
-        self.coordinates = tweet['coordinates']
-        self.favorited = tweet['favorited']
-        self.favorite_count = tweet['favorite_count']
-        self.geo = tweet['geo']
+    def __init__(self, tweet):        
+        self.created_at =  time.strftime('%Y-%m-%d %H:%M:%S', time.strptime(tweet['created_at'],'%a %b %d %H:%M:%S +0000 %Y'))
         self.id_str = tweet['id_str']
-        self.in_reply_to_screen_name = tweet['in_reply_to_screen_name']
-        self.in_reply_to_user_id = tweet['in_reply_to_user_id']
-        self.in_reply_to_status_id = tweet['in_reply_to_status_id']
-        self.is_quote_status = tweet['is_quote_status']
-        self.lang = tweet['lang']
+        self.text = tweet['text']
+        self.source = tweet['source']
+        self.user_id_str = tweet['user']['id_str']
+        self.user_name = tweet['user']['name']
+        self.user_location = tweet['user']['location']
+        self.user_url = tweet['user']['url']
+        self.user_protected = tweet['user']['protected']
+        self.user_followers_count = tweet['user']['followers_count']
+        self.user_friends_count = tweet['user']['friends_count']
+        self.user_favourites_count = tweet['user']['favourites_count']
+        self.user_lang = tweet['user']['lang']
+        self.geo = tweet['geo']
+        self.coordinates = tweet['coordinates']
+        self.favorite_count = tweet['favorite_count']
         self.place = tweet['place']
-        self.retweet_count = tweet['retweet_count']
-        # self.retweeted_status = tweet['retweeted_status']
+        self.favorited = tweet['favorited']
         self.retweet_count = tweet['retweet_count']
         self.retweeted = tweet['retweeted']
-        self.source = tweet['source']
-        # self.source_url = tweet['source_url']
-        self.text = tweet['text']
-        self.truncated = tweet['truncated']
-        self.user = tweet['user']
-        self.entities = tweet['entities']
-        self.metadata = tweet['metadata']
+        self.lang = tweet['lang']
 
     def toList(self):
         return list(self.__dict__.values())

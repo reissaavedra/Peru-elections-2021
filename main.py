@@ -37,10 +37,12 @@ def uploadTweets2Csv(tweets, candidate, lang):
     with open(fileName, 'a') as file:
         try:
             writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-            writer.writerow(TweetBatch.TweetBatch.columns)
+            if os.stat(fileName).st_size == 0:
+                    writer.writerow(TweetBatch.TweetBatch.columns)
             i = 0
             for tweet in tweets:
                 tweetBatch = TweetBatch.TweetBatch(tweet._json)
+                print(tweetBatch.__dict__.values())
                 writer.writerow(tweetBatch.__dict__.values())
                 i += 1
                 if i % 100 == 0:
