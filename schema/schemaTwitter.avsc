@@ -15,7 +15,6 @@
      {"name": "in_reply_to_status_id", "type": ["string", "null"]},
      {"name": "is_quote_status", "type": ["string", "null"]},
      {"name": "lang", "type": ["string", "null"]},
-
      {"name": "place", "type": ["string", "null"]},
      {"name": "retweet_count", "type": ["string", "null"]},
      {"name": "retweet_count", "type": ["string", "null"]},
