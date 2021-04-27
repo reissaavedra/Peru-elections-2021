@@ -1,9 +1,30 @@
 {"namespace": "schema",
  "type": "record",
- "name": "User",
+ "name": "Tweet",
  "fields": [
-     {"name": "name", "type": "string"},
-     {"name": "favorite_number",  "type": ["int", "null"]},
-     {"name": "favorite_color", "type": ["string", "null"]}
+     {"name": "created_at", "type": "string"},
+     {"name": "contributors",  "type": ["int", "null"]},
+     {"name": "favorite_color", "type": ["string", "null"]},
+     {"name": "coordinates", "type": ["string", "null"]},
+     {"name": "favorited", "type": ["string", "null"]},
+     {"name": "favorite_count", "type": ["string", "null"]},
+     {"name": "geo", "type": ["string", "null"]},
+     {"name": "id_str", "type": ["string", "null"]},
+     {"name": "in_reply_to_screen_name", "type": ["string", "null"]},
+     {"name": "in_reply_to_user_id", "type": ["string", "null"]},
+     {"name": "in_reply_to_status_id", "type": ["string", "null"]},
+     {"name": "is_quote_status", "type": ["string", "null"]},
+     {"name": "lang", "type": ["string", "null"]},
+
+     {"name": "place", "type": ["string", "null"]},
+     {"name": "retweet_count", "type": ["string", "null"]},
+     {"name": "retweet_count", "type": ["string", "null"]},
+     {"name": "retweeted", "type": ["string", "null"]},
+     {"name": "source", "type": ["string", "null"]},
+     {"name": "text", "type": ["string", "null"]},
+     {"name": "truncated", "type": ["string", "null"]},
+     {"name": "user", "type": ["string", "null"]},
+     {"name": "entities", "type": ["string", "null"]},
+     {"name": "metadata", "type": ["string", "null"]}
  ]
 }
