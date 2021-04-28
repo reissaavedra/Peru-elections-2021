@@ -1,11 +1,19 @@
+import argparse as argp
+import datetime
+import json
 import random
-
 from tweepy import Cursor, StreamListener, Stream
 from utils.utils import configTweepy, getDatesExtractData, getItemsCount, getKeywords, getLanguages
 from batch import TweetBatch
 import os
 from itertools import product
 import csv
+
+import avro.schema
+import avro.io
+
+
+
 
 candidates = {
     'castilloValue': 'Castillo',
@@ -15,12 +23,14 @@ candidates = {
 PATH_DATA_CSV = './dataCsv'
 FORMAT_DATE = '%Y-%m-%d'
 
+
 def generateDates():
     import datetime
     today = datetime.date.today()
     sinceDate = datetime.datetime.strptime(getDatesExtractData(), FORMAT_DATE).date()
     differenceBetweenDates = abs((today - sinceDate).days) + 1
     return [(sinceDate + datetime.timedelta(days=i)).strftime(FORMAT_DATE) for i in range(differenceBetweenDates)]
+
 
 def extractTweets():
     api = configTweepy()
@@ -36,12 +46,38 @@ def extractTweets():
                                       q=getKeywords(candidates[key]),
                                       lang=lang,
                                       since=f'{dateToSearch}',
-                                      until=f'{rangeDates[v+1]}',
-                                      show_user= True).items(itemsCount)
-                print(f'Staring download tweets Candidate: {candidates[key]}, dateToSearch: {dateToSearch}, lang: {lang}')
+                                      until=f'{rangeDates[v + 1]}',
+                                      show_user=True).items(itemsCount)
+                print(
+                    f'Staring download tweets Candidate: {candidates[key]}, dateToSearch: {dateToSearch}, lang: {lang}')
                 uploadTweets2Csv(cursorTweepy, candidates[key], lang, dateToSearch)
-            v+=1
+            v += 1
 
+def extractTweetTest():
+    api = configTweepy()
+    if api:
+        cursorTweepy = Cursor(
+            configTweepy().search,
+            q='keiko',
+            lang='es',
+            since='2021-04-26',
+            until='2021-04-27',
+            show_user=True).items(10)
+        import json
+        arrJson = [json.dumps(t._json, indent=2) for t in cursorTweepy]
+        with open('test/jsonTweetsTest.json','a') as f:
+            json.dump(arrJson, f)
+
+def readTweetsTestJson():
+    path_schema = '/home/reisson/projects_python/Peru-elections-2021/schema'
+
+    from fastavro.schema import load_schema
+    parsed_schema = load_schema(os.path.join(path_schema, 'schemaTwitter.avsc'))
+    with open('test/jsonTweetsTest.json', 'r') as f:
+        jsonTweets = json.loads(f.read())
+        for t in jsonTweets:
+            tweet = TweetBatch.TweetBatch(json.loads(t))
+            print(tweet.toAvro(schema=parsed_schema))
 
 def uploadTweets2Csv(tweets, candidate, lang, dateToSearch):
     fileName = os.path.join(PATH_DATA_CSV, f'{candidate}_{lang}_{dateToSearch}.csv')
@@ -64,5 +100,42 @@ def uploadTweets2Csv(tweets, candidate, lang, dateToSearch):
                 print(e)
                 continue
 
+
 if __name__ == '__main__':
-    extractTweets()
+    # parse command line options
+    # params = {
+    #     'date': datetime.date.today().strftime('%Y-%m-%d'),
+    #     'cand': '',
+    #     'format': 'csv',
+    #     'outFile': ''
+    # }
+    #
+    # parser = argp.ArgumentParser()
+    # parser.add_argument('-d', '--date',
+    #                     help='date for extraction', type=str)
+    # parser.add_argument('-c', '--cand',
+    #                     help='candidate for extraction', type=str)
+    # parser.add_argument('-f', '--format',
+    #                     help='format output-file', type=str)
+    # parser.add_argument('-of', '--outfile',
+    #                     help='output-file', type=str)
+    # options = parser.parse_args()
+    #
+    # if options.date is not None:
+    #     params['date'] = options.date
+    #
+    # if options.format is not None:
+    #     params['format'] = options.format
+    #
+    # if options.cand is not None:
+    #     params['cand'] = options.cand
+    # else:
+    #     raise SystemExit('Debe ingresar el nombre del candidato')
+    #
+    # if options.format is not None:
+    #     params['outFile'] = options.outfile
+    # else:
+    #     params['outFile'] = os.path.join(params['date'], f"{params['cand']}.{params['format']}")
+    #
+    # #
+    readTweetsTestJson()

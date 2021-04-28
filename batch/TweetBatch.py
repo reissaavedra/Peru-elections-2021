@@ -1,3 +1,6 @@
+import fastavro
+from io import BytesIO
+
 class TweetBatch:
     columns = [
         'created_at',
@@ -25,7 +28,7 @@ class TweetBatch:
     ]
 
     def __init__(self, tweet):
-        self.created_at = tweet[self.columns[0]]
+        self.created_at = tweet['created_at']
         self.contributors = tweet['contributors']
         self.coordinates = tweet['coordinates']
         self.favorited = tweet['favorited']
@@ -38,7 +41,6 @@ class TweetBatch:
         self.is_quote_status = tweet['is_quote_status']
         self.lang = tweet['lang']
         self.place = tweet['place']
-        self.retweet_count = tweet['retweet_count']
         # self.retweeted_status = tweet['retweeted_status']
         self.retweet_count = tweet['retweet_count']
         self.retweeted = tweet['retweeted']
@@ -46,9 +48,15 @@ class TweetBatch:
         # self.source_url = tweet['source_url']
         self.text = tweet['text']
         self.truncated = tweet['truncated']
-        self.user = tweet['user']
-        self.entities = tweet['entities']
-        self.metadata = tweet['metadata']
+        # self.user = tweet['user']
+        # self.entities = tweet['entities']
+        # self.metadata = tweet['metadata']
+
+    def toAvro(self, schema):
+        buf = BytesIO()
+        fastavro.writer(buf, schema, [self.__dict__])
+        message = buf.getvalue()
+        return message
 
     def toList(self):
         return list(self.__dict__.values())
