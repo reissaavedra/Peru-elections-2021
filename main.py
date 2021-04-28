@@ -1,5 +1,6 @@
 import argparse as argp
 import datetime
+import json
 import random
 from tweepy import Cursor, StreamListener, Stream
 from utils.utils import configTweepy, getDatesExtractData, getItemsCount, getKeywords, getLanguages
@@ -7,6 +8,12 @@ from batch import TweetBatch
 import os
 from itertools import product
 import csv
+
+import avro.schema
+import avro.io
+
+
+
 
 candidates = {
     'castilloValue': 'Castillo',
@@ -49,7 +56,8 @@ def extractTweets():
 def extractTweetTest():
     api = configTweepy()
     if api:
-        cursorTweepy = Cursor(configTweepy().search,
+        cursorTweepy = Cursor(
+            configTweepy().search,
             q='keiko',
             lang='es',
             since='2021-04-26',
@@ -59,6 +67,17 @@ def extractTweetTest():
         arrJson = [json.dumps(t._json, indent=2) for t in cursorTweepy]
         with open('test/jsonTweetsTest.json','a') as f:
             json.dump(arrJson, f)
+
+def readTweetsTestJson():
+    path_schema = '/home/reisson/projects_python/Peru-elections-2021/schema'
+
+    from fastavro.schema import load_schema
+    parsed_schema = load_schema(os.path.join(path_schema, 'schemaTwitter.avsc'))
+    with open('test/jsonTweetsTest.json', 'r') as f:
+        jsonTweets = json.loads(f.read())
+        for t in jsonTweets:
+            tweet = TweetBatch.TweetBatch(json.loads(t))
+            print(tweet.toAvro(schema=parsed_schema))
 
 def uploadTweets2Csv(tweets, candidate, lang, dateToSearch):
     fileName = os.path.join(PATH_DATA_CSV, f'{candidate}_{lang}_{dateToSearch}.csv')
@@ -119,4 +138,4 @@ if __name__ == '__main__':
     #     params['outFile'] = os.path.join(params['date'], f"{params['cand']}.{params['format']}")
     #
     # #
-    extractTweetTest()
+    readTweetsTestJson()
