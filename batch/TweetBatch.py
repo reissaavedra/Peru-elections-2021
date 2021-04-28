@@ -1,8 +1,3 @@
-import avro.schema
-from avro.datafile import DataFileReader,DataFileWriter
-from avro.io import DatumReader,DatumWriter
-from os import path
-
 import fastavro
 from io import BytesIO
 
